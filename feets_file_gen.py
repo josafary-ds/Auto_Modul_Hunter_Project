@@ -17,7 +17,7 @@ def feets_table_generation(input_folder, input_file):
     table = []
 
     for file in input_dir:
-        df = pd.read_csv(f'LC_test/{file}', sep=' ', header=None, names=['time', 'flux'])
+        df = pd.read_csv(f'{input_folder}/{file}', sep=' ', header=None, names=['time', 'flux'])
         time, flux = (df.time, df.flux)
         lc_feets = [time, flux]
 
@@ -41,7 +41,7 @@ def feets_table_generation(input_folder, input_file):
 
     feets_final_table = df_main.merge(df_class, on='id', how='left')
 
-    feets_final_table.to_csv('feets_full_table_exemple_1.csv', sep=';', index=False)
+    feets_final_table.to_csv('feets_full_table.csv', sep=';', index=False)
 
 
 
