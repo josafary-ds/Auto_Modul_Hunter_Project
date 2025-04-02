@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import LabelEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 import pickle
@@ -27,14 +27,12 @@ x_feets = imputer.fit_transform(x_feets)
 scaler_feets = StandardScaler()
 x_feets = scaler_feets.fit_transform(x_feets)
 
-# Applaying OneHotEncoder to class column
-onehotencoder_feets = ColumnTransformer(transformers=[('OneHot', OneHotEncoder(sparse_output=False), [0])], remainder='passthrough')
-y_feets = y_feets.reshape(-1, 1)
-y_feets = onehotencoder_feets.fit_transform(y_feets)
+# Applying LabelEncoder to class column
+y_feets = LabelEncoder().fit_transform(y_feets)
 
 # Creating training-test basis
 x_feets_training, x_feets_test, y_feets_training, y_feets_test = train_test_split(x_feets, y_feets, test_size=0.25, random_state=0)
 
 # Saving into pkl file
 with open('feets_data.pkl', mode='wb') as f:
-    pickle.dump([x_feets_training, y_feets_training, x_feets_test, y_feets_test], f)
+    pickle.dump([x_feets_training, x_feets_test, y_feets_training, y_feets_test], f)
