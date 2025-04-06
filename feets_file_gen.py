@@ -3,6 +3,7 @@ import numpy as np
 import os
 import feets
 import warnings
+import sys
 
 
 # CREATES A FEETS TABLE WITH ALL NEEDED INFORMATION
@@ -15,20 +16,28 @@ def feets_table_generation(input_folder, input_file):
 
     # Creates a longtable with the features from feets
     table = []
+    total_files = len(input_dir)
 
-    for file in input_dir:
+    for idx, file in enumerate(input_dir, 1):  # começa de 1
         df = pd.read_csv(f'{input_folder}/{file}', sep=' ', header=None, names=['time', 'flux'])
         time, flux = (df.time, df.flux)
         lc_feets = [time, flux]
 
-        fs = feets.FeatureSpace(data=['magnitude', 'time'], only=['Amplitude', 'Eta_e', 'LinearTrend', 'Mean', 'Meanvariance', 'MedianAbsDev', 'PercentAmplitude', 'PeriodLS', 'Period_fit', 'Psi_CS', 'Psi_eta', 'Std'])
+        fs = feets.FeatureSpace(data=['magnitude', 'time'], only=[
+            'Amplitude', 'Eta_e', 'LinearTrend', 'Mean', 'Meanvariance', 
+            'MedianAbsDev', 'PercentAmplitude', 'PeriodLS', 'Period_fit', 
+            'Psi_CS', 'Psi_eta', 'Std'])
+        
         features, values = fs.extract(*lc_feets)
 
         id_sec = file.split('.')[0] 
         id_name, sec_name = id_sec.split('_')
 
-        df_1 = pd.DataFrame(data=[[id_name, sec_name, *values]], columns=['id', 'sector']+list(features))
+        df_1 = pd.DataFrame(data=[[id_name, sec_name, *values]], columns=['id', 'sector'] + list(features))
         table.append(df_1)
+
+        # Progress indicator
+        print(f'Processing file {idx}/{total_files}', end='\r', flush=True)
 
     df_main = pd.concat(table, ignore_index=True)
 
